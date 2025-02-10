@@ -1,7 +1,6 @@
 defmodule NumberGetBiggerWeb.IdleLive do
   use NumberGetBiggerWeb, :live_view
 
-  # milliseconds
   defp tick_frequency(), do: 1000
 
   def mount(_params, _session, socket) do
@@ -10,7 +9,7 @@ defmodule NumberGetBiggerWeb.IdleLive do
     socket =
       socket
       |> assign(%{
-        points: 10000,
+        points: 0,
         manual_click_mult: 1,
         manual_click_mult_cost: 10,
         auto_clickers: 0,
@@ -23,46 +22,49 @@ defmodule NumberGetBiggerWeb.IdleLive do
   end
 
   def render(assigns) do
-    # TODO: refactor to separate document
     ~H"""
-    <div>
+    <div class="flex justify-center">
       <%= if @points > 0 || @manual_click_mult > 1 || @auto_clickers > 0 || @auto_clicker_mult > 1 do %>
-        <p>Points: {round(@points)}</p>
+        <p class="text-8xl">{round(@points)}</p>
       <% end %>
+    </div>
+    <div class="flex justify-center">
       <%= if @auto_clickers > 0 || @auto_clicker_mult > 1 do %>
-        <p>Auto Clickers: {@auto_clickers}<%= if @auto_clicker_mult > 1 do %> x{Float.round(@auto_clicker_mult, 2)}<% end %>
-				</p>
+        <p>
+          Auto Clickers: {@auto_clickers}
+          <%= if @auto_clicker_mult > 1 do %>
+            x{Float.round(@auto_clicker_mult, 2)}
+          <% end %>
+        </p>
       <% end %>
     </div>
     <br />
-    <div>
-      <.button class="bg-emerald-900 hover:bg-emerald-700" id="manual_click" phx-click="manual_click">
-        Make Number Bigger<%= if @manual_click_mult > 1 do %> x{Float.round(@manual_click_mult, 2)}<% end %>
+    <div class="flex justify-center space-x-2 mb-4">
+      <.button class="bg-fuchsia-900 hover:bg-fuchsia-700" id="manual_click" phx-click="manual_click">
+        Make Number Bigger<%= if @manual_click_mult > 1 do %>
+          x{Float.round(@manual_click_mult, 2)}
+        <% end %>
       </.button>
-    </div>
-    <br />
-    <div>
       <%= if @points >= @manual_click_mult_cost do %>
         <.button
-          class="bg-emerald-900 hover:bg-emerald-700"
+          class="bg-fuchsia-900 hover:bg-fuchsia-700"
           id="upgrade_manual_click"
           phx-click="upgrade_manual_click"
         >
-          Make Number Bigger, Faster ({@manual_click_mult_cost} points)
+          &lt;- Faster ({@manual_click_mult_cost} points)
         </.button>
       <% else %>
         <%= if @manual_click_mult > 1 do %>
           <.button id="upgrade_manual_click" phx-click="upgrade_manual_click" disabled>
-            Make Number Bigger, Faster ({@manual_click_mult_cost} points)
+            &lt;- Faster ({@manual_click_mult_cost} points)
           </.button>
         <% end %>
       <% end %>
     </div>
-    <br />
-    <div>
+    <div class="flex justify-center space-x-2">
       <%= if @points >= @auto_clicker_cost do %>
         <.button
-          class="bg-emerald-900 hover:bg-emerald-700"
+          class="bg-fuchsia-900 hover:bg-fuchsia-700"
           id="buy_auto_clicker"
           phx-click="buy_auto_clicker"
         >
@@ -75,21 +77,18 @@ defmodule NumberGetBiggerWeb.IdleLive do
           </.button>
         <% end %>
       <% end %>
-    </div>
-    <br />
-    <div>
       <%= if @points >= @auto_clicker_mult_cost do %>
         <.button
-          class="bg-emerald-900 hover:bg-emerald-700"
+          class="bg-fuchsia-900 hover:bg-fuchsia-700"
           id="upgrade_auto_clickers"
           phx-click="upgrade_auto_clickers"
         >
-          Eh, do it for me, faster ({@auto_clicker_mult_cost} points)
+          &lt;- Faster ({@auto_clicker_mult_cost} points)
         </.button>
       <% else %>
         <%= if @auto_clicker_mult > 1 do %>
           <.button id="upgrade_auto_clickers" phx-click="upgrade_auto_clickers" disabled>
-            Eh, do it for me, faster ({@auto_clicker_mult_cost} points)
+            &lt;- Faster ({@auto_clicker_mult_cost} points)
           </.button>
         <% end %>
       <% end %>
@@ -106,19 +105,19 @@ defmodule NumberGetBiggerWeb.IdleLive do
   end
 
   def handle_event("upgrade_manual_click", _params, socket) do
-	  if socket.assigns.points >= socket.assigns.manual_click_mult_cost do
-		  socket =
-			  socket
-			  |> assign(%{
-				  points: socket.assigns.points - socket.assigns.manual_click_mult_cost,
-				  manual_click_mult: socket.assigns.manual_click_mult * 1.05,
-				  manual_click_mult_cost: round(socket.assigns.manual_click_mult_cost * 1.10)
-			  })
+    if socket.assigns.points >= socket.assigns.manual_click_mult_cost do
+      socket =
+        socket
+        |> assign(%{
+          points: socket.assigns.points - socket.assigns.manual_click_mult_cost,
+          manual_click_mult: socket.assigns.manual_click_mult * 1.05,
+          manual_click_mult_cost: round(socket.assigns.manual_click_mult_cost * 1.10)
+        })
 
-		  {:noreply, socket}
-	  else
-		  {:noreply, socket}
-	  end
+      {:noreply, socket}
+    else
+      {:noreply, socket}
+    end
   end
 
   def handle_event("buy_auto_clicker", _params, socket) do
