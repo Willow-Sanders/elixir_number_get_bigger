@@ -17,7 +17,7 @@ defmodule NumberGetBiggerWeb.Router do
   scope "/", NumberGetBiggerWeb do
     pipe_through :browser
 
-    get "/", PageController, :home
+    live "/", IdleLive, :idle
   end
 
   # Other scopes may use custom stacks.
