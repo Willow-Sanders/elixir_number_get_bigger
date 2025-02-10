@@ -1,7 +1,11 @@
 # NumberGetBigger
 
-A silly idle game. Number get bigger. Generate Dopamine.
+A silly idle game built with Elixir Phoenix LiveView. 
 
-Start with `mix phx.server`
+Number get bigger. Generate Dopamine.
+
+`cd number_get_bigger`
+
+`mix phx.server`
 
 Willow Sanders 2025
